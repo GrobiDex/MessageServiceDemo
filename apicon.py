@@ -1,20 +1,20 @@
-from zeep import Client, Transport
-from zeep.wsse.signature import Signature
-from zeep.wsse import UsernameToken
+import requests.auth
+from zeep import Client
+from requests import Session
+from requests.auth import HTTPDigestAuth
+from zeep.transports import Transport
+
 
 # Задаем параметры
-webServiceUrl = 'https://services.fedresurs.ru/Bankruptcy/MessageServiceDemo/WebService.svc'
-login = 'demowebuser'
+webServiceUrl = 'https://services.fedresurs.ru/Bankruptcy/MessageServiceDemo/WebService.svc?wsdl'
+username = 'demowebuser'
 password = 'Ax!761BN'
 
-# создаем объект Signature и устанавливаем в нем UsernameToken
-signature = Signature(key_filename=None, cert_filename=None)
-signature.set_signature('UsernameToken', UsernameToken(login, password))
 
 # Устанавливаем заголовок для подключения к сервису
-transport = Transport()
-transport.wsse = signature
-client = Client(webServiceUrl, transport=transport)
+session = Session()
+session.auth = requests.auth.HTTPDigestAuth(username, password)
+client = Client(webServiceUrl, transport=Transport(session=session))
 
 # Функция для проверки и очистки введенного ИНН
 def process_inn():
